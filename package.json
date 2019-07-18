@@ -6,6 +6,7 @@
   "main": "dist/index.cjs",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "rollup -c && tsc --emitDeclarationOnly",
     "versions": "node -p \"require('./package.json').version\"",
