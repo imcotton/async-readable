@@ -3,12 +3,13 @@
   "version": "0.1.3",
   "description": "Async read for NodeJS.ReadableStream",
   "type": "module",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "index.cjs",
+  "module": "index.mjs",
+  "types": "index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "rollup -c && tsc --emitDeclarationOnly",
+    "prepublishOnly": "mv ./dist/* ./",
+    "build": "rollup -c --environment OUT:./dist && tsc --emitDeclarationOnly",
     "ver": "echo ${npm_package_name}@${npm_package_version}",
     "test": "jest --ci --coverage"
   },
