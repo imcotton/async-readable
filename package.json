@@ -9,7 +9,7 @@
   "sideEffects": false,
   "scripts": {
     "build": "rollup -c && tsc --emitDeclarationOnly",
-    "versions": "node -p \"require('./package.json').version\"",
+    "ver": "echo ${npm_package_name}@${npm_package_version}",
     "test": "jest --ci --coverage"
   },
   "keywords": [

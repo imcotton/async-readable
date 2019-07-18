@@ -68,6 +68,6 @@ action "Tag Check: latest" {
 action "NPM Latest" {
   uses = "actions/npm@master"
   needs = "Tag Check: latest"
-  args = "dist-tag add async-readable@$(npm run -s versions) latest"
+  args = "dist-tag add $(npm run -s ver) latest"
   secrets = ["NPM_AUTH_TOKEN"]
 }
