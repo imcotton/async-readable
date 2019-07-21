@@ -33,7 +33,7 @@ export function toAsyncIterable <T> (gen: Gen<T>) {
 
 export function toReadableStream <T> (gen: Gen<T>) {
 
-    const { from } = Readable as any;
+    const { from } = Readable;
 
     if (typeof from !== 'function') {
         throw new Error('Requires Readable.from in Node.js >= v12.3.0');
