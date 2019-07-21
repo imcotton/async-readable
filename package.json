@@ -8,7 +8,7 @@
   "sideEffects": false,
   "scripts": {
     "prepublishOnly": "mv ./dist/* ./",
-    "build": "rollup -c --environment OUT:./dist && tsc --emitDeclarationOnly",
+    "build": "rollup -c && tsc --emitDeclarationOnly",
     "ver": "echo ${npm_package_name}@${npm_package_version}",
     "test": "jest --ci --coverage"
   },

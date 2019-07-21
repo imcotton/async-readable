@@ -4,7 +4,7 @@ import pkg from './package.json';
 
 
 
-const dist = file => `${ process.env.OUT || '.' }/${ file }`;
+const dist = file => `${ process.env.OUT || './dist' }/${ file }`;
 
 
 
