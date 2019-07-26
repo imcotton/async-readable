@@ -35,11 +35,11 @@ export function toReadableStream <T> (gen: Gen<T>) {
 
     const { from } = Readable;
 
-    if (typeof from !== 'function') {
-        throw new Error('Requires Readable.from in Node.js >= v12.3.0');
-    }
-
     return function (source: ReadableStream) {
+
+        if (typeof from !== 'function') {
+            throw new Error('Requires Readable.from in Node.js >= v12.3.0');
+        }
 
         return from(toAsyncIterable(gen)(source)) as NodeJS.ReadableStream;
 
