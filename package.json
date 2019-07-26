@@ -1,6 +1,6 @@
 {
   "name": "async-readable",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Async read for NodeJS.ReadableStream",
   "main": "index.cjs",
   "module": "index.mjs",
