@@ -33,15 +33,56 @@ export function toAsyncIterable <T> (gen: Gen<T>) {
 
 export function toReadableStream <T> (gen: Gen<T>) {
 
-    const { from } = Readable;
-
     return function (source: ReadableStream) {
 
-        if (typeof from !== 'function') {
-            throw new Error('Requires Readable.from in Node.js >= v12.3.0');
+        return new Readable({
+            objectMode: true,
+            read: reader(toAsyncIterable(gen)(source)),
+        });
+
+    };
+
+}
+
+
+
+export function reader <T> (source: AsyncIterable<T>, destroy = () => { }) {
+
+    const iterator = source[Symbol.asyncIterator]();
+
+    let reading = false;
+
+    return async function (this: Readable) {
+
+        if (reading) {
+            return;
         }
 
-        return from(toAsyncIterable(gen)(source)) as NodeJS.ReadableStream;
+        reading = true;
+
+        try {
+
+            while (true) {
+
+                const { value, done } = await iterator.next();
+
+                if (done) {
+                    break;
+                }
+
+                if (this.push(value) === false) {
+                    reading = false;
+                    return;
+                }
+
+            }
+
+            this.push(null);
+
+        } catch (error) {
+            destroy();
+            this.destroy(error);
+        }
 
     };
 
