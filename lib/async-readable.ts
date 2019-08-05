@@ -56,7 +56,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
     const iterator = gen();
 
-    const [ error, reject ] = rejection();
+    const [ error, reject ] = rejection<T>();
 
 
     return Object.freeze({
