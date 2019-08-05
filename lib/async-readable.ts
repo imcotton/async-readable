@@ -15,7 +15,7 @@ export type AsyncReadable = ReturnType<typeof asyncReadable>;
 export type Read = AsyncReadable['read'];
 export type Off = AsyncReadable['off'];
 
-export type Gen <T> = (readable: AsyncReadable) => AsyncIterableIterator<T>;
+export type Gen <T> = (readable: AsyncReadable) => AsyncIterable<T>;
 
 
 
