@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 
 
 
-export type ReadableStream = Pick<NodeJS.ReadableStream, 'on' | 'off' | 'read'>;
+export type ReadableStream = Pick<NodeJS.ReadableStream, 'on' | 'off' | 'once' | 'read'>;
 
 
 
@@ -99,6 +99,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
     const iterator = gen();
 
+    const [ error, reject ] = rejection();
 
 
     return Object.freeze({
@@ -112,7 +113,10 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
         iterator.next();
 
-        return iterator.next(size).then(({ value }) => value as T);
+        return Promise.race([
+            iterator.next(size).then(({ value }) => value as T),
+            error,
+        ]);
 
     }
 
@@ -123,6 +127,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
     async function* gen () {
 
         stream.on('readable', onReadable);
+        stream.once('error', reject);
 
         while (true) {
 
@@ -150,6 +155,17 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
             next = 0;
             resolve(data);
         }
+
+    }
+
+    function rejection () {
+
+        /* istanbul ignore next */ // tslint:disable-next-line:no-unused-expression
+        let reject = (error: Error) => { error; };
+
+        const error = new Promise((_res, rej) => reject = rej);
+
+        return [ error, reject ] as const;
 
     }
 
