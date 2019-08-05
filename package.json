@@ -25,11 +25,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/jest": "^24.0.15",
-    "@types/node": "^12.6.8",
+    "@types/jest": "^24.0.16",
+    "@types/node": "^10.14.14",
     "jest": "^24.8.0",
-    "jest-junit": "^6.4.0",
-    "rollup": "^1.17.0",
+    "jest-junit": "^7.0.0",
+    "rollup": "^1.18.0",
     "ts-jest": "^24.0.2",
     "tslib": "^1.10.0",
     "typescript": "^3.5.3"
