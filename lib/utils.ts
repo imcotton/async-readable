@@ -50,12 +50,12 @@ export function reader <T> (source: AsyncIterable<T>, destroy = () => { }) {
 
 
 
-export function rejection () {
+export function rejection <T> () {
 
     /* istanbul ignore next */ // tslint:disable-next-line:no-unused-expression
     let reject = (error: Error) => { error; };
 
-    const error = new Promise((_res, rej) => reject = rej);
+    const error = new Promise<T>((_res, rej) => reject = rej);
 
     return [ error, reject ] as const;
 
