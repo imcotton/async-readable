@@ -1,12 +1,13 @@
 /// <reference lib="es2018.asynciterable" />
 
 import { Readable } from 'stream';
+import { reader, rejection } from './utils';
 
 
 
 
 
-export type ReadableStream = Pick<NodeJS.ReadableStream, 'on' | 'off' | 'read'>;
+export type ReadableStream = Pick<NodeJS.ReadableStream, 'on' | 'off' | 'once' | 'read'>;
 
 
 
@@ -15,7 +16,7 @@ export type AsyncReadable = ReturnType<typeof asyncReadable>;
 export type Read = AsyncReadable['read'];
 export type Off = AsyncReadable['off'];
 
-export type Gen <T> = (readable: AsyncReadable) => AsyncIterableIterator<T>;
+export type Gen <T> = (readable: AsyncReadable) => AsyncIterable<T>;
 
 
 
@@ -33,15 +34,12 @@ export function toAsyncIterable <T> (gen: Gen<T>) {
 
 export function toReadableStream <T> (gen: Gen<T>) {
 
-    const { from } = Readable;
-
     return function (source: ReadableStream) {
 
-        if (typeof from !== 'function') {
-            throw new Error('Requires Readable.from in Node.js >= v12.3.0');
-        }
-
-        return from(toAsyncIterable(gen)(source)) as NodeJS.ReadableStream;
+        return new Readable({
+            objectMode: true,
+            read: reader(toAsyncIterable(gen)(source)),
+        });
 
     };
 
@@ -58,6 +56,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
     const iterator = gen();
 
+    const [ error, reject ] = rejection<T>();
 
 
     return Object.freeze({
@@ -71,7 +70,10 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
         iterator.next();
 
-        return iterator.next(size).then(({ value }) => value as T);
+        return Promise.race([
+            iterator.next(size).then(({ value }) => value as T),
+            error,
+        ]);
 
     }
 
@@ -82,6 +84,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
     async function* gen () {
 
         stream.on('readable', onReadable);
+        stream.once('error', reject);
 
         while (true) {
 

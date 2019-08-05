@@ -10,7 +10,7 @@ const dist = file => `${ process.env.OUT || './dist' }/${ file }`;
 
 export default {
 
-    input: './lib/index.ts',
+    input: dist(pkg.main),
 
     output: [
         {
@@ -24,14 +24,6 @@ export default {
     ],
 
     external: 'buffer|stream'.split('|'),
-
-    plugins: [
-
-        require('rollup-plugin-typescript')({
-            typescript: require('typescript'),
-        }),
-
-    ],
 
 };
 
