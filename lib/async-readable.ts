@@ -1,6 +1,6 @@
 /// <reference lib="es2018.asynciterable" />
 
-import { Readable } from 'stream';
+import { ReadableOptions as Opts, Readable } from 'stream';
 import { reader, rejection } from './utils';
 
 
@@ -34,10 +34,10 @@ export function toAsyncIterable <T> (gen: Gen<T>) {
 
 export function toReadableStream <T> (gen: Gen<T>) {
 
-    return function (source: ReadableStream) {
+    return function (source: ReadableStream, opts: Opts = { objectMode: true }) {
 
         return new Readable({
-            objectMode: true,
+            ...opts,
             read: reader(toAsyncIterable(gen)(source)),
         });
 
