@@ -79,6 +79,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
     function off () {
         stream.off('readable', onReadable);
+        stream.off('error', reject);
     }
 
     async function* gen () {
