@@ -72,7 +72,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
         return Promise.race([
             iterator.next(size).then(({ value }) => value as T),
-            error,
+            error.finally(off),
         ]);
 
     }
