@@ -17,7 +17,6 @@
     "readable",
     "stream"
   ],
-  "author": "Cotton Hou <himcotton@gmail.com>",
   "repository": "imcotton/async-readable",
   "homepage": "https://github.com/imcotton/async-readable#readme",
   "bugs": {
