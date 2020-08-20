@@ -14,7 +14,6 @@ export type ReadableStream = Pick<NodeJS.ReadableStream, 'on' | 'off' | 'once' |
 export type AsyncReadable = ReturnType<typeof asyncReadable>;
 
 export type Read = AsyncReadable['read'];
-export type Off = AsyncReadable['off'];
 
 export type Gen <T> = (readable: AsyncReadable) => AsyncIterable<T>;
 
@@ -60,7 +59,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
 
 
-    return { read, off };
+    return { read };
 
 
 
@@ -71,10 +70,7 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
         return Promise.race([
             iterator.next(size).then(({ value }) => value as T),
             error,
-        ]).catch(e => {
-            off();
-            throw e;
-        });
+        ]).finally(off);
 
     }
 
@@ -85,17 +81,16 @@ export function asyncReadable <T extends Buffer> (stream: ReadableStream) {
 
     async function* gen () {
 
-        stream.on('readable', onReadable);
-        stream.once('error', reject);
-
         while (true) {
 
             next = yield;
 
             if (Boolean(next) === false || next < 1) {
-                off();
                 throw new RangeError(`Invalid size: ${ next }`);
             }
+
+            stream.on('readable', onReadable);
+            stream.once('error', reject);
 
             yield new Promise<T>(res => {
                 resolve = res;
