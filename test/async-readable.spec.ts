@@ -83,3 +83,42 @@ describe('toReadableStream', () => {
 
 });
 
+
+
+describe('back-pressure', () => {
+
+    const source = Buffer.allocUnsafe(1000);
+
+    const readable = new Readable({
+
+        read () {
+            this.push(source);
+            this.push(null);
+        },
+
+    })
+
+    const gen = async function* ({ read }: AsyncReadable) {
+        while (true) {
+            yield read(1);
+        }
+    };
+
+    const stream = toReadableStream (gen) (readable, { highWaterMark: 1 });
+
+    test('', done => {
+
+        stream.once('readable', () => {
+
+            if (stream.read() != null) {
+                done();
+            }
+
+        });
+
+        stream.read(1);
+
+    });
+
+});
+
