@@ -52,5 +52,40 @@ describe('reader', () => {
 
     });
 
+    test('double reading w/ destroy', async () => {
+
+        const push = jest.fn();
+        const destroy = jest.fn();
+
+        const shell = { push, destroy } as unknown as Readable;
+
+        const readable = new Readable({
+
+            read () {
+                this.push(Buffer.allocUnsafe(10));
+                this.push(null);
+            },
+
+        });
+
+        const gen = async function* ({ read }: AsyncReadable) {
+            yield read(1);
+            throw 'wat';
+        };
+
+        const read = reader(gen(asyncReadable(readable)));
+
+        const [ a, b ] = await Promise.all([
+            read.call(shell),
+            read.call(shell),
+        ]);
+
+        expect(a).toEqual(b);
+        expect(b).toBeUndefined();
+        expect(push).toHaveBeenCalled();
+        expect(destroy).toHaveBeenCalledWith('wat');
+
+    });
+
 });
 
