@@ -50,7 +50,7 @@ const { connect } = require('net');
 
 const socket = connect({ host: 'localhost', port: 8080 });
 
-async function* process ({ read }) {
+async function* looping ({ read }) {
 
     while (true) {
         const head = await read(2);
@@ -66,7 +66,7 @@ _hence_
 ```javascript
 const { toAsyncIterable } = require('async-readable');
 
-const unpack = toAsyncIterable(process);
+const unpack = toAsyncIterable(looping);
 
 async function run () {
 
@@ -82,7 +82,7 @@ _or_
 ```javascript
 const { toReadableStream } = require('async-readable');
 
-const unpack = toReadableStream(process);
+const unpack = toReadableStream(looping);
 
 function run () {
 
